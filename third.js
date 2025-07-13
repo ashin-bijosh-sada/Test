@@ -28,10 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const headers = ["Full Name", "Email", "Institution", "Interest Area"];
     const rows = submissions.map(s => [
-      "${s.name}",
-      "${s.email}",
-      "${s.institution}",
-      "${s.interest}"
+      `"${s.name}"`,
+      `"${s.email}"`,
+      `"${s.institution}"`,
+      `"${s.interest}"`
     ]);
 
     const csvContent =
@@ -51,4 +51,3 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.removeChild(link);
   });
 });
-
