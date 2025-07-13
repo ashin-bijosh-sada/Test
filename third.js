@@ -22,9 +22,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     submissions.push(data);        // Add new submission
     saveToLocalStorage();          // Persist in localStorage
-
-    alert("Submission added! Click 'Download All Submissions' to save as CSV.");
     form.reset();
+
+    // Use timeout to allow click events to complete before alert
+    setTimeout(() => {
+      alert("Submission added! Click 'Download All Submissions' to save as CSV.");
+    }, 50);
   });
 
   downloadBtn.addEventListener("click", function () {
@@ -45,16 +48,18 @@ document.addEventListener("DOMContentLoaded", function () {
       headers.join(",") + "\n" +
       rows.map(r => r.join(",")).join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
 
     link.setAttribute("href", url);
     link.setAttribute("download", "narsn_all_submissions.csv");
+    link.setAttribute("rel", "noopener");
     link.style.display = "none";
 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url); // cleanup
   });
 });
