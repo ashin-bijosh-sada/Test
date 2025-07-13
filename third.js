@@ -2,7 +2,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("joinForm");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  const submissions = []; // Store all entries here
+  // Load previous submissions from localStorage
+  let submissions = JSON.parse(localStorage.getItem("narsnSubmissions")) || [];
+
+  // Save to localStorage after each new entry
+  function saveToLocalStorage() {
+    localStorage.setItem("narsnSubmissions", JSON.stringify(submissions));
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -14,10 +20,13 @@ document.addEventListener("DOMContentLoaded", function () {
       interest: form.interest.value.trim()
     };
 
-    submissions.push(data); // Add to list
-
-    alert("Submission added! Click 'Download All Submissions' to save as CSV.");
+    submissions.push(data);     // Add to list
+    saveToLocalStorage();       // Save the updated list
     form.reset();
+
+    setTimeout(() => {
+      alert("Submission added! Click 'Download All Submissions' to save as CSV.");
+    }, 50);
   });
 
   downloadBtn.addEventListener("click", function () {
@@ -27,7 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const headers = ["Full Name", "Email", "Institution", "Interest Area"];
-    const rows = submissions.map(s => [
+
+    // Reverse so latest appears first (optional)
+    const rows = submissions.slice().reverse().map(s => [
       `"${s.name}"`,
       `"${s.email}"`,
       `"${s.institution}"`,
@@ -44,10 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     link.setAttribute("href", url);
     link.setAttribute("download", "narsn_all_submissions.csv");
+    link.setAttribute("rel", "noopener");
     link.style.display = "none";
 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url); // cleanup
   });
 });
