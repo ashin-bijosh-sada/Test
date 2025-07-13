@@ -2,7 +2,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("joinForm");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  const submissions = []; // Store all entries here
+  // Load from localStorage if it exists
+  let submissions = JSON.parse(localStorage.getItem("narsnSubmissions")) || [];
+
+  // Save to localStorage after each new entry
+  function saveToLocalStorage() {
+    localStorage.setItem("narsnSubmissions", JSON.stringify(submissions));
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -14,7 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
       interest: form.interest.value.trim()
     };
 
-    submissions.push(data); // Add to list
+    submissions.push(data);        // Add new submission
+    saveToLocalStorage();          // Persist in localStorage
 
     alert("Submission added! Click 'Download All Submissions' to save as CSV.");
     form.reset();
