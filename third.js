@@ -2,13 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("joinForm");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  // Load from localStorage if it exists
-  let submissions = JSON.parse(localStorage.getItem("narsnSubmissions")) || [];
-
-  // Save to localStorage after each new entry
-  function saveToLocalStorage() {
-    localStorage.setItem("narsnSubmissions", JSON.stringify(submissions));
-  }
+  const submissions = []; // Store all entries here
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -20,14 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
       interest: form.interest.value.trim()
     };
 
-    submissions.push(data);        // Add new submission
-    saveToLocalStorage();          // Persist in localStorage
-    form.reset();
+    submissions.push(data); // Add to list
 
-    // Use timeout to allow click events to complete before alert
-    setTimeout(() => {
-      alert("Submission added! Click 'Download All Submissions' to save as CSV.");
-    }, 50);
+    alert("Submission added! Click 'Download All Submissions' to save as CSV.");
+    form.reset();
   });
 
   downloadBtn.addEventListener("click", function () {
@@ -38,28 +28,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const headers = ["Full Name", "Email", "Institution", "Interest Area"];
     const rows = submissions.map(s => [
-      `"${s.name}"`,
-      `"${s.email}"`,
-      `"${s.institution}"`,
-      `"${s.interest}"`
+      "${s.name}",
+      "${s.email}",
+      "${s.institution}",
+      "${s.interest}"
     ]);
 
     const csvContent =
       headers.join(",") + "\n" +
       rows.map(r => r.join(",")).join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
 
     link.setAttribute("href", url);
     link.setAttribute("download", "narsn_all_submissions.csv");
-    link.setAttribute("rel", "noopener");
     link.style.display = "none";
 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url); // cleanup
   });
 });
+
